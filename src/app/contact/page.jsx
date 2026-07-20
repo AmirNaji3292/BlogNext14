@@ -10,7 +10,7 @@ function Contact() {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 ">
       <div>
-         <Image src="/contact.png" height={500} width={500}/>
+         <Image alt="contact" src="/contact.png" height={500} width={500}/>
       </div>
 
       <div className=" flex w-[470px] rounded-lg">

@@ -1,4 +1,4 @@
-import { addPost, deletPost } from '@/lib/action'
+import { addPost, deletePost } from '@/lib/action'
 
 
 function serveraction() {
@@ -12,9 +12,9 @@ function serveraction() {
             <button className='text-red-800 text-2xl'>test me</button>
         </form>
 
-        <form action={deletPost}>
+        <form action={deletePost}>
           <input placeholder='id' name='id'/>
-          <button>delet post</button>
+          <button>delete post</button>
         </form>
     </div>
   )

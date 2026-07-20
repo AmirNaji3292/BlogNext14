@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: rgb(207, 24, 51);
     
     font-size: 16px;
    
@@ -12,6 +12,6 @@
     min-width: 70px;
     height: 25px;
     border-radius: 13px;
-    background-color: white;
-    color: darkslateblue;
+    background-color: rgb(170, 54, 54);
+    color: rgb(225, 224, 233);
 }

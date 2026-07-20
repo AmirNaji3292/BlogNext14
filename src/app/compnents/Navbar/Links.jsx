@@ -1,80 +1,106 @@
-"use client"
+"use client";
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import style from './links.module.css'
-import { useState } from 'react'
-import { handleLogOtGithub } from '@/lib/action'
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import style from "./links.module.css";
+import { useState } from "react";
+import { handleLogOtGithub } from "@/lib/action";
 
-function Links({session}) {
+function Links({ session }) {
+  const [open, setOpen] = useState(false);
+  const pathName = usePathname();
 
-    const [open , setOpen]=useState(false)
+  const links = [
+    { title: "Home", path: "/" },
+    { title: "About", path: "/about" },
+    { title: "Blog", path: "/blog" },
+    { title: "Contact", path: "/contact" },
+    ...(session?.user?.isAdmin
+      ? [{ title: "Admin", path: "/admin" }]
+      : []),
+  ];
 
-    const pathName=usePathname()
+  return (
+    <div className="relative">
 
-    const links=[
-        {
-         title:"Home",
-         path:'/'
-        },
-        {
-         title:"About",
-        path:'/about'
-        },
-        {
-            title:"Blog",
-            path:'/blog'
-        },
-        {
-            title:'Contact',
-            path:'/contact'
-        }
+      {/* Desktop Menu */}
+      <div className="hidden sm:flex items-center gap-4">
+        {links.map((item) => (
+          <Link
+            key={item.path}
+            href={item.path}
+            className={`${style.container} ${
+              pathName === item.path ? style.activ : ""
+            }`}
+          >
+            {item.title}
+          </Link>
+        ))}
 
-    ]
+        {session?.user ? (
+          <form action={handleLogOtGithub}>
+            <button className="ml-4 italic text-green-500">
+              Log out
+            </button>
+          </form>
+        ) : (
+          <Link href="/login">
+            Login
+          </Link>
+        )}
+      </div>
 
-    
-    // const isAdmin=true;
 
-  return(
-    <div className='flex gap-4 '>
-        {
-           links.map((item)=>(
-             <div className='hidden sm:flex md:flex xl:flex 2xl:flex'>
-            <Link 
-            className={`${style.container} ${pathName===item.path && style.activ }`
-           } 
-            
-            href={item.path} key={item.title}>{item.title}</Link></div>
-           ))}
-        {session?.user? (<div className='hidden sm:flex md:flex xl:flex 2xl:flex'> 
-         {session.user?.isAdmin && <Link className='ml-3 italic mt-1 text-sky-500' 
-          href='/admin'>isAdmin</Link>} 
-          <form action={handleLogOtGithub}><button className='ml-4 italic mt-1 text-sky-500'>log out</button></form></div>):<Link 
-          href='/login'>login</Link>}
+      {/* Mobile Button */}
+      <button
+        className="sm:hidden"
+        onClick={() => setOpen(!open)}
+      >
+        <Image
+          src="/menu.png"
+          width={30}
+          height={30}
+          alt="Menu"
+        />
+      </button>
 
-         { /* start responsive */}
-          <p >
-          <button  className='sm:hidden md:hidden  lg:hidden xl:hidden 2xl:hidden'   
-           onClick={()=>setOpen((prev)=>!prev)}><Image src='/menu.png' width={25} 
-            height={25}/></button></p>
-          {open && <div className='flex flex-col'>
-            {
-           links.map((item)=>(
-            <Link 
-            className={`${style.container} ${pathName===item.path && style.activ}` } 
-            
-            href={item.path} key={item.title}>{item.title}</Link>
-           ))}
-           {session?.user? (<div className=' sm:flex md:flex xl:flex 2xl:flex'> 
-         {session.user?.isAdmin && <Link className='border-[1px]' 
-          href='/admin'>isAdmin</Link>} 
-          <form action={handleLogOtGithub}><button className='ml-2'>log out</button></form></div>):<Link 
-          href='/login'>login</Link>}
 
-            </div>}
+      {/* Mobile Menu */}
+      {open && (
+        <div className="absolute right-0 top-10 z-50 flex flex-col gap-3 bg-white rounded-lg shadow-lg p-5">
+
+          {links.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              onClick={() => setOpen(false)}
+              className={`${style.container} ${
+                pathName === item.path ? style.activ : ""
+              }`}
+            >
+              {item.title}
+            </Link>
+          ))}
+
+
+          {session?.user ? (
+            <form action={handleLogOtGithub}>
+              <button>
+                Log out
+              </button>
+            </form>
+          ) : (
+            <Link href="/login">
+              Login
+            </Link>
+          )}
+
+        </div>
+      )}
+
     </div>
-  )
+  );
 }
 
-export default Links
+export default Links;

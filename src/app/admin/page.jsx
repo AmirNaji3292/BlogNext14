@@ -8,8 +8,11 @@ import { auth } from "@/lib/auth";
 
 const AdminPage = async () => {
 
-  const session = await auth();
+const session = await auth();
 
+if (!session) {
+  return <h1>Please login first.</h1>;
+}
   return (
     <div className={styles.container}>
       <div className={styles.row}>
