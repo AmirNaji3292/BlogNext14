@@ -8,28 +8,22 @@ import { authConfig } from "./auth.config";
 
 
 const login = async (credentials) => {
-  try {
-    await connectToDb();
+  await connectToDb();
 
-    const user = await User.findOne({
-      username: credentials.username,
-    });
+  const user = await User.findOne({
+    username: credentials.username,
+  });
 
-    if (!user) throw new Error("Wrong credentials!");
+  if (!user) throw new Error("Wrong credentials!");
 
-    const isPasswordCorrect = await bcrypt.compare(
-      credentials.password,
-      user.password
-    );
+  const isPasswordCorrect = await bcrypt.compare(
+    credentials.password,
+    user.password
+  );
 
-    if (!isPasswordCorrect) throw new Error("Wrong credentials!");
+  if (!isPasswordCorrect) throw new Error("Wrong credentials!");
 
-    return user;
-
-  } catch (err) {
-    console.log(err);
-    throw new Error("Failed to login!");
-  }
+  return user;
 };
 
 
@@ -52,8 +46,7 @@ export const {
     CredentialsProvider({
       async authorize(credentials) {
         try {
-          const user = await login(credentials);
-          return user;
+          return await login(credentials);
         } catch (err) {
           return null;
         }
@@ -71,27 +64,19 @@ export const {
 
         await connectToDb();
 
-        try {
+        const dbUser = await User.findOne({
+          email: profile.email,
+        });
 
-          const dbUser = await User.findOne({
+
+        if (!dbUser) {
+
+          await User.create({
+            username: profile.login,
             email: profile.email,
+            img: profile.avatar_url,
+            isAdmin: false,
           });
-
-
-          if (!dbUser) {
-
-            await User.create({
-              username: profile.login,
-              email: profile.email,
-              image: profile.avatar_url,
-            });
-
-          }
-
-        } catch (err) {
-
-          console.log(err);
-          return false;
 
         }
       }
@@ -100,7 +85,11 @@ export const {
     },
 
 
-    async jwt({ token, user }) {
+    async jwt({ token }) {
+
+      if (!token.email) {
+        return token;
+      }
 
       await connectToDb();
 
@@ -110,15 +99,8 @@ export const {
 
 
       if (dbUser) {
-
         token.id = dbUser._id.toString();
         token.isAdmin = dbUser.isAdmin;
-
-      }
-
-
-      if (user && !token.id) {
-        token.id = user.id;
       }
 
 
@@ -137,7 +119,6 @@ export const {
 
       return session;
     },
-
 
   },
 
