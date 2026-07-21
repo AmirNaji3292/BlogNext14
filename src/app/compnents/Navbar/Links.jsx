@@ -3,17 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import style from "./links.module.css";
 import { useState } from "react";
+import style from "./links.module.css";
 import { handleLogOtGithub } from "@/lib/action";
+
 
 function Links({ session, isAdmin }) {
 
   const [open, setOpen] = useState(false);
   const pathName = usePathname();
-
-  console.log("SESSION:", session);
-  console.log("ADMIN:", isAdmin);
 
 
   const links = [
@@ -26,7 +24,7 @@ function Links({ session, isAdmin }) {
       ? [{ title: "Admin", path: "/admin" }]
       : []),
   ];
-
+// console.log("LINKS ADMIN:", isAdmin);
 
   return (
     <div className="relative">
@@ -36,7 +34,6 @@ function Links({ session, isAdmin }) {
       <div className="hidden sm:flex items-center gap-4">
 
         {links.map((item) => (
-
           <Link
             key={item.path}
             href={item.path}
@@ -46,18 +43,15 @@ function Links({ session, isAdmin }) {
           >
             {item.title}
           </Link>
-
         ))}
 
 
         {session?.user ? (
 
           <form action={handleLogOtGithub}>
-
             <button className="ml-4 italic text-green-500">
               Log out
             </button>
-
           </form>
 
         ) : (
@@ -94,7 +88,6 @@ function Links({ session, isAdmin }) {
 
         <div className="absolute right-0 top-10 z-50 flex flex-col gap-3 bg-white rounded-lg shadow-lg p-5">
 
-
           {links.map((item) => (
 
             <Link
@@ -111,15 +104,12 @@ function Links({ session, isAdmin }) {
           ))}
 
 
-
           {session?.user ? (
 
             <form action={handleLogOtGithub}>
-
               <button>
                 Log out
               </button>
-
             </form>
 
           ) : (
@@ -129,7 +119,6 @@ function Links({ session, isAdmin }) {
             </Link>
 
           )}
-
 
         </div>
 

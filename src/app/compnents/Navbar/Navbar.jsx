@@ -1,9 +1,25 @@
 import { auth } from "@/lib/auth";
 import Links from "./Links";
+import { connectToDb } from "@/lib/utils";
+import { User } from "@/lib/models";
 
 async function Navbar() {
 
   const session = await auth();
+
+  let isAdmin = false;
+
+  if (session?.user?.email) {
+
+    await connectToDb();
+
+    const user = await User.findOne({
+      email: session.user.email,
+    });
+
+    isAdmin = user?.isAdmin || false;
+  }
+// console.log("ADMIN FROM DB:", isAdmin);
 
   return (
     <div className="flex justify-around">
@@ -16,7 +32,7 @@ async function Navbar() {
 
         <Links 
           session={session}
-          isAdmin={false}
+          isAdmin={isAdmin}
         />
 
       </div>
