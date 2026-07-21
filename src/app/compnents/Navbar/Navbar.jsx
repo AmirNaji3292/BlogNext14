@@ -13,7 +13,10 @@ async function Navbar() {
             
         </div>
         <div className="text-white gap-8 mt-4 max-h-[200px] ">
-        <Links session={session}/>
+        <Links 
+              session={session}
+              isAdmin={isAdmin}
+             />
 
         </div>
     </div>

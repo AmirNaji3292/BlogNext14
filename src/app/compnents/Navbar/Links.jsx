@@ -7,27 +7,36 @@ import style from "./links.module.css";
 import { useState } from "react";
 import { handleLogOtGithub } from "@/lib/action";
 
-function Links({ session }) {
+function Links({ session, isAdmin }) {
+
   const [open, setOpen] = useState(false);
   const pathName = usePathname();
-  console.log(session)
+
+  console.log("SESSION:", session);
+  console.log("ADMIN:", isAdmin);
+
 
   const links = [
     { title: "Home", path: "/" },
     { title: "About", path: "/about" },
     { title: "Blog", path: "/blog" },
     { title: "Contact", path: "/contact" },
-    ...(session?.user?.isAdmin
+
+    ...(isAdmin
       ? [{ title: "Admin", path: "/admin" }]
       : []),
   ];
 
+
   return (
     <div className="relative">
 
+
       {/* Desktop Menu */}
       <div className="hidden sm:flex items-center gap-4">
+
         {links.map((item) => (
+
           <Link
             key={item.path}
             href={item.path}
@@ -37,20 +46,30 @@ function Links({ session }) {
           >
             {item.title}
           </Link>
+
         ))}
 
+
         {session?.user ? (
+
           <form action={handleLogOtGithub}>
+
             <button className="ml-4 italic text-green-500">
               Log out
             </button>
+
           </form>
+
         ) : (
+
           <Link href="/login">
             Login
           </Link>
+
         )}
+
       </div>
+
 
 
       {/* Mobile Button */}
@@ -58,20 +77,26 @@ function Links({ session }) {
         className="sm:hidden"
         onClick={() => setOpen(!open)}
       >
+
         <Image
           src="/menu.png"
           width={30}
           height={30}
           alt="Menu"
         />
+
       </button>
+
 
 
       {/* Mobile Menu */}
       {open && (
+
         <div className="absolute right-0 top-10 z-50 flex flex-col gap-3 bg-white rounded-lg shadow-lg p-5">
 
+
           {links.map((item) => (
+
             <Link
               key={item.path}
               href={item.path}
@@ -82,26 +107,37 @@ function Links({ session }) {
             >
               {item.title}
             </Link>
+
           ))}
 
 
+
           {session?.user ? (
+
             <form action={handleLogOtGithub}>
+
               <button>
                 Log out
               </button>
+
             </form>
+
           ) : (
+
             <Link href="/login">
               Login
             </Link>
+
           )}
 
+
         </div>
+
       )}
 
     </div>
   );
 }
+
 
 export default Links;
