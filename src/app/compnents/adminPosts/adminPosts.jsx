@@ -39,7 +39,7 @@ const AdminPosts = async () => {
             <div className="w-[80px] h-[80px] rounded-full overflow-hidden">
 
               <Image
-                src={post.img || "/noAvatar.png"}
+                src={post.img || "/noavatar.png"}
                 alt={post.title}
                 width={50}
                 height={50}

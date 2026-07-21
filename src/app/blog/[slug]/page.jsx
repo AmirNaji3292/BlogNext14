@@ -58,7 +58,7 @@ export default async function SinglePostPage({ params }) {
           <div className="flex items-center gap-4 mb-6">
 
             <Image
-              src={user?.img || "/noAvatar.png"}
+              src={user?.img || "/noavatar.png"}
               alt={user?.username || "Author"}
               width={60}
               height={60}

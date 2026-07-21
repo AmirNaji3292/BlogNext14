@@ -18,7 +18,7 @@ const AdminUsers = async () => {
           <div className={styles.detail}>
             <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
               <Image
-                src={user.img || "/noAvatar.png"}
+                src={user.img || "/noavatar.png"}
                 alt={user.username}
                 width={50}
                 height={50}
