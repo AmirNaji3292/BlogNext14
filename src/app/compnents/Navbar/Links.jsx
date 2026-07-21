@@ -10,6 +10,7 @@ import { handleLogOtGithub } from "@/lib/action";
 function Links({ session }) {
   const [open, setOpen] = useState(false);
   const pathName = usePathname();
+  console.log(session)
 
   const links = [
     { title: "Home", path: "/" },
