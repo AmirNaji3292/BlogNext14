@@ -15,9 +15,7 @@ const login = async (credentials) => {
   });
 
 
-  if (!user) {
-    throw new Error("User not found");
-  }
+  if (!user) return null;
 
 
   const passwordCorrect = await bcrypt.compare(
@@ -26,9 +24,7 @@ const login = async (credentials) => {
   );
 
 
-  if (!passwordCorrect) {
-    throw new Error("Wrong password");
-  }
+  if (!passwordCorrect) return null;
 
 
   return user;
@@ -55,41 +51,42 @@ export const {
 
       async authorize(credentials) {
 
-        try {
+        return await login(credentials);
 
-          const user = await login(credentials);
+      },
 
-          return user;
+    }),
 
-        } catch(err){
+  ],
 
-          return null;
+
+  callbacks: {
+
+    async session({ session }) {
+
+      if (session.user?.email) {
+
+        await connectToDb();
+
+        const dbUser = await User.findOne({
+          email: session.user.email,
+        });
+
+
+        if (dbUser) {
+
+          session.user.id = dbUser._id.toString();
+          session.user.isAdmin = dbUser.isAdmin;
 
         }
 
       }
 
-    })
-
-  ],
-
-
-  callbacks:{
-
-
-    async session({session,token}){
-
-      if(session.user){
-
-        session.user.id = token.sub;
-
-      }
 
       return session;
 
-    }
+    },
 
-
-  }
+  },
 
 });
