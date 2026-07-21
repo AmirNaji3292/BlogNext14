@@ -1,30 +1,39 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 import { connectToDb } from "./utils";
 import { User } from "./models";
-import bcrypt from "bcryptjs";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { authConfig } from "./auth.config";
 
 
 const login = async (credentials) => {
+
   await connectToDb();
 
   const user = await User.findOne({
     username: credentials.username,
   });
 
-  if (!user) throw new Error("Wrong credentials!");
 
-  const isPasswordCorrect = await bcrypt.compare(
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+
+  const passwordCorrect = await bcrypt.compare(
     credentials.password,
     user.password
   );
 
-  if (!isPasswordCorrect) throw new Error("Wrong credentials!");
+
+  if (!passwordCorrect) {
+    throw new Error("Wrong password");
+  }
+
 
   return user;
 };
+
 
 
 export const {
@@ -34,8 +43,6 @@ export const {
   signOut,
 } = NextAuth({
 
-  ...authConfig,
-
   providers: [
 
     GitHub({
@@ -43,83 +50,46 @@ export const {
       clientSecret: process.env.GITHUB_SECRET,
     }),
 
+
     CredentialsProvider({
+
       async authorize(credentials) {
+
         try {
-          return await login(credentials);
-        } catch (err) {
+
+          const user = await login(credentials);
+
+          return user;
+
+        } catch(err){
+
           return null;
+
         }
-      },
-    }),
+
+      }
+
+    })
 
   ],
 
 
-  callbacks: {
-
-    async signIn({ account, profile }) {
-
-      if (account.provider === "github") {
-
-        await connectToDb();
-
-        const dbUser = await User.findOne({
-          email: profile.email,
-        });
+  callbacks:{
 
 
-        if (!dbUser) {
+    async session({session,token}){
 
-          await User.create({
-            username: profile.login,
-            email: profile.email,
-            img: profile.avatar_url,
-            isAdmin: false,
-          });
+      if(session.user){
 
-        }
-      }
-
-      return true;
-    },
-
-
-    async jwt({ token }) {
-
-      if (!token.email) {
-        return token;
-      }
-
-      await connectToDb();
-
-      const dbUser = await User.findOne({
-        email: token.email,
-      });
-
-
-      if (dbUser) {
-        token.id = dbUser._id.toString();
-        token.isAdmin = dbUser.isAdmin;
-      }
-
-
-      return token;
-    },
-
-
-    async session({ session, token }) {
-
-      if (session.user) {
-
-        session.user.id = token.id;
-        session.user.isAdmin = token.isAdmin;
+        session.user.id = token.sub;
 
       }
 
       return session;
-    },
 
-  },
+    }
+
+
+  }
 
 });
