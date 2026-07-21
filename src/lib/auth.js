@@ -6,7 +6,7 @@ import { connectToDb } from "./utils";
 import { User } from "./models";
 
 
-const login = async (credentials) => {
+async function login(credentials) {
 
   await connectToDb();
 
@@ -18,17 +18,22 @@ const login = async (credentials) => {
   if (!user) return null;
 
 
-  const passwordCorrect = await bcrypt.compare(
+  const valid = await bcrypt.compare(
     credentials.password,
     user.password
   );
 
 
-  if (!passwordCorrect) return null;
+  if (!valid) return null;
 
 
-  return user;
-};
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    name: user.username,
+  };
+
+}
 
 
 
@@ -38,6 +43,9 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+
+  secret: process.env.AUTH_SECRET,
+
 
   providers: [
 
@@ -49,33 +57,31 @@ export const {
 
     CredentialsProvider({
 
-      async authorize(credentials) {
+      async authorize(credentials){
 
-        const user = await login(credentials);
+        return await login(credentials);
 
-        return user;
+      }
 
-      },
-
-    }),
+    })
 
   ],
 
 
   callbacks: {
 
-    async session({ session, token }) {
+    // async session({session, token}){
 
-      if (session.user) {
+    //   if(session.user){
 
-        session.user.id = token.sub;
+    //     session.user.id = token.sub;
 
-      }
+    //   }
 
-      return session;
+    //   return session;
 
-    },
+    // }
 
-  },
+  }
 
 });
