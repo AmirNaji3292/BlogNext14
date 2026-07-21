@@ -51,7 +51,9 @@ export const {
 
       async authorize(credentials) {
 
-        return await login(credentials);
+        const user = await login(credentials);
+
+        return user;
 
       },
 
@@ -62,26 +64,13 @@ export const {
 
   callbacks: {
 
-    async session({ session }) {
+    async session({ session, token }) {
 
-      if (session.user?.email) {
+      if (session.user) {
 
-        await connectToDb();
-
-        const dbUser = await User.findOne({
-          email: session.user.email,
-        });
-
-
-        if (dbUser) {
-
-          session.user.id = dbUser._id.toString();
-          session.user.isAdmin = dbUser.isAdmin;
-
-        }
+        session.user.id = token.sub;
 
       }
-
 
       return session;
 
